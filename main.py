@@ -52,8 +52,8 @@ def build_rest_surfaces(dwg: svgwrite.Drawing, conf: dict) -> None:
 
 def add_top_notch(conf, dwg, side, top_left):
     notch_size = (
-        conf["sheet"]["thickness"],
-        conf["stand"]["supports_notches_length"],
+        conf["sheet"]["thickness"] - conf["cutter"]["kerf"],
+        conf["stand"]["supports_notches_length"] - conf["cutter"]["kerf"],
     )
     notch_center = (
         (top_left[0] + rest_width(conf) / 2),
@@ -77,8 +77,8 @@ def add_top_notch(conf, dwg, side, top_left):
 
 def add_bottom_notch(conf, dwg, side, top_left):
     notch_size = (
-        conf["sheet"]["thickness"],
-        conf["stand"]["supports_notches_length"],
+        conf["sheet"]["thickness"] - conf["cutter"]["kerf"],
+        conf["stand"]["supports_notches_length"] - conf["cutter"]["kerf"],
     )
     notch_center = (
         (top_left[0] + rest_width(conf) / 2),

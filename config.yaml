@@ -14,3 +14,5 @@ stand:
   front_margin: 5 # extend the rest surface beyond the feet to place the front support
   supports_notches_margin: 2 # between the notches for supports and the end of the rest surface
   supports_notches_length: 2
+cutter:
+  kerf: 0.08
