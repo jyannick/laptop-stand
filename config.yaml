@@ -1,0 +1,16 @@
+# unit: cm
+sheet:
+  width: 29.7
+  height: 42
+  thickness: 0.5
+  margin: 0.5 # between the pieces and the edge of sheet
+laptop:
+  width: 40 # considering the feet, include some margin
+  depth: 30 # considering the feet, include some margin
+  height: 3 # without screen: only for the front support
+  between_feet: 26 # in width, include some margin
+stand:
+  corner_radius: 0.8
+  front_margin: 5 # extend the rest surface beyond the feet to place the front support
+  supports_notches_margin: 2 # between the notches for supports and the end of the rest surface
+  supports_notches_length: 2

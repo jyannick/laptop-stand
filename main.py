@@ -1,44 +1,102 @@
+import math
+from pathlib import Path
+from typing import Iterable
+
 import svgwrite
-from svgwrite import cm, mm
+import yaml
+from svgwrite import cm
 
 
-def generate_svg(filename: str, width: str, height: str) -> None:
-    dwg = svgwrite.Drawing(filename=filename, size=(width, height), debug=True)
-
-    # BEGIN EXAMPLE
-    hlines = dwg.add(dwg.g(id="hlines", stroke="green"))
-    for y in range(20):
-        hlines.add(dwg.line(start=(2 * cm, (2 + y) * cm), end=(18 * cm, (2 + y) * cm)))
-    vlines = dwg.add(dwg.g(id="vline", stroke="blue"))
-    for x in range(17):
-        vlines.add(dwg.line(start=((2 + x) * cm, 2 * cm), end=((2 + x) * cm, 21 * cm)))
-    shapes = dwg.add(dwg.g(id="shapes", fill="red"))
-
-    # set presentation attributes at object creation as SVG-Attributes
-    circle = dwg.circle(
-        center=(15 * cm, 8 * cm), r="2.5cm", stroke="blue", stroke_width=3
-    )
-    circle["class"] = "class1 class2"
-    shapes.add(circle)
-
-    # override the 'fill' attribute of the parent group 'shapes'
-    shapes.add(
-        dwg.rect(
-            insert=(5 * cm, 5 * cm),
-            size=(45 * mm, 45 * mm),
-            fill="blue",
-            stroke="red",
-            stroke_width=3,
-        )
-    )
-
-    # or set presentation attributes by helper functions of the Presentation-Mixin
-    ellipse = shapes.add(dwg.ellipse(center=(10 * cm, 15 * cm), r=("5cm", "10mm")))
-    ellipse.fill("green", opacity=0.5).stroke("black", width=5).dasharray([20, 20])
-    # END EXAMPLE
-
+def generate_svg(filename: Path, conf_file: Path) -> None:
+    with open(conf_file) as f:
+        conf = yaml.safe_load(f)
+    dwg = create_drawing(conf, filename)
+    build_rest_surfaces(dwg, conf)
     dwg.save(pretty=True)
 
 
+def to_cm(iterable: Iterable) -> list:
+    return [x * cm for x in iterable]
+
+
+def supports_small_half_angle(conf: dict) -> float:
+    return math.atan2(rest_length(conf), conf["laptop"]["width"])
+
+
+def supports_big_half_angle(conf: dict) -> float:
+    return math.pi / 2 - supports_small_half_angle(conf)
+
+
+def build_rest_surfaces(dwg: svgwrite.Drawing, conf: dict) -> None:
+    for left in (0, rest_width(conf)):
+        top_left = (
+            (conf["sheet"]["margin"] + left),
+            conf["sheet"]["margin"],
+        )
+        dwg.add(
+            dwg.rect(
+                insert=to_cm(top_left),
+                size=(rest_width(conf) * cm, rest_length(conf) * cm),
+                rx=conf["stand"]["corner_radius"] * cm,
+                fill="blue",
+                stroke="red",
+                stroke_width=3,
+            )
+        )
+        top_notch = dwg.add(
+            dwg.rect(
+                insert=to_cm(
+                    (
+                        (
+                            top_left[0]
+                            + rest_width(conf) / 2
+                            - conf["sheet"]["thickness"] / 2
+                        ),
+                        (top_left[1] + conf["stand"]["supports_notches_margin"]),
+                    )
+                ),
+                size=to_cm(
+                    (
+                        conf["sheet"]["thickness"],
+                        conf["stand"]["supports_notches_length"],
+                    )
+                ),
+                fill="red",
+            )
+        )
+        dwg.add(top_notch)
+
+
+def rest_width(conf):
+    return (conf["laptop"]["width"] - conf["laptop"]["between_feet"]) / 2
+
+
+def rest_length(conf):
+    return conf["laptop"]["depth"] + conf["stand"]["front_margin"]
+
+
+def create_drawing(conf, filename):
+    size = (conf["sheet"]["width"] * cm, conf["sheet"]["height"] * cm)
+    dwg = svgwrite.Drawing(
+        filename=filename,
+        size=size,
+        debug=True,
+    )
+    dwg.add(
+        dwg.rect(
+            insert=(0, 0),
+            size=size,
+            fill="grey",
+            stroke="black",
+            stroke_width=3,
+        )
+    )
+    dwg.save(pretty=True)
+    return dwg
+
+
 if __name__ == "__main__":
-    generate_svg("laptop_stand.svg", width="29.7cm", height="42cm")
+    generate_svg(
+        Path("laptop_stand.svg"),
+        conf_file=Path("config.yaml"),
+    )
