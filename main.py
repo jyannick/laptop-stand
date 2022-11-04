@@ -6,6 +6,9 @@ import svgwrite
 import yaml
 from svgwrite import cm
 
+import shapes
+from constants import PIECE_FILL, CUT_COLOR, CUT_WIDTH, WASTE_FILL
+
 
 def generate_svg(filename: Path, conf_file: Path) -> None:
     with open(conf_file) as f:
@@ -28,43 +31,74 @@ def supports_big_half_angle(conf: dict) -> float:
 
 
 def build_rest_surfaces(dwg: svgwrite.Drawing, conf: dict) -> None:
-    for left in (0, rest_width(conf)):
+    for side, left_coord in zip(("left", "right"), (0, rest_width(conf))):
         top_left = (
-            (conf["sheet"]["margin"] + left),
+            (conf["sheet"]["margin"] + left_coord),
             conf["sheet"]["margin"],
         )
         dwg.add(
             dwg.rect(
-                insert=to_cm(top_left),
-                size=(rest_width(conf) * cm, rest_length(conf) * cm),
-                rx=conf["stand"]["corner_radius"] * cm,
-                fill="blue",
-                stroke="red",
-                stroke_width=3,
+                insert=top_left,
+                size=(rest_width(conf), rest_length(conf)),
+                rx=conf["stand"]["corner_radius"],
+                fill=PIECE_FILL,
+                stroke=CUT_COLOR,
+                stroke_width=CUT_WIDTH,
             )
         )
-        top_notch = dwg.add(
-            dwg.rect(
-                insert=to_cm(
-                    (
-                        (
-                            top_left[0]
-                            + rest_width(conf) / 2
-                            - conf["sheet"]["thickness"] / 2
-                        ),
-                        (top_left[1] + conf["stand"]["supports_notches_margin"]),
-                    )
-                ),
-                size=to_cm(
-                    (
-                        conf["sheet"]["thickness"],
-                        conf["stand"]["supports_notches_length"],
-                    )
-                ),
-                fill="red",
-            )
-        )
-        dwg.add(top_notch)
+        add_top_notch(conf, dwg, side, top_left)
+        add_bottom_notch(conf, dwg, side, top_left)
+
+
+def add_top_notch(conf, dwg, side, top_left):
+    notch_size = (
+        conf["sheet"]["thickness"],
+        conf["stand"]["supports_notches_length"],
+    )
+    notch_center = (
+        (top_left[0] + rest_width(conf) / 2),
+        (
+            top_left[1]
+            + conf["stand"]["supports_notches_margin"]
+            + conf["stand"]["supports_notches_length"] / 2
+        ),  # neglect rotation, increases margin
+    )
+    notch = shapes.rectangle(
+        size=notch_size,
+        center=notch_center,
+        rotation_angle_rad=supports_small_half_angle(conf)
+        if side == "right"
+        else math.pi - supports_small_half_angle(conf),
+        dwg=dwg,
+        fill=WASTE_FILL,
+    )
+    dwg.add(notch)
+
+
+def add_bottom_notch(conf, dwg, side, top_left):
+    notch_size = (
+        conf["sheet"]["thickness"],
+        conf["stand"]["supports_notches_length"],
+    )
+    notch_center = (
+        (top_left[0] + rest_width(conf) / 2),
+        (
+            top_left[1]
+            + rest_length(conf)
+            - conf["stand"]["supports_notches_margin"]
+            - conf["stand"]["supports_notches_length"] / 2
+        ),  # neglect rotation, increases margin
+    )
+    notch = shapes.rectangle(
+        size=notch_size,
+        center=notch_center,
+        rotation_angle_rad=supports_small_half_angle(conf)
+        if side == "left"
+        else math.pi - supports_small_half_angle(conf),
+        dwg=dwg,
+        fill=WASTE_FILL,
+    )
+    dwg.add(notch)
 
 
 def rest_width(conf):
@@ -76,19 +110,18 @@ def rest_length(conf):
 
 
 def create_drawing(conf, filename):
-    size = (conf["sheet"]["width"] * cm, conf["sheet"]["height"] * cm)
+    size = (conf["sheet"]["width"], conf["sheet"]["height"])
     dwg = svgwrite.Drawing(
         filename=filename,
-        size=size,
+        size=to_cm(size),
+        viewBox=(f"0 0 {size[0]} {size[1]}"),
         debug=True,
     )
     dwg.add(
         dwg.rect(
             insert=(0, 0),
             size=size,
-            fill="grey",
-            stroke="black",
-            stroke_width=3,
+            fill=WASTE_FILL,
         )
     )
     dwg.save(pretty=True)

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="full" height="42cm" version="1.1" width="29.7cm">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="full" height="42cm" version="1.1" viewBox="0 0 29.7 42" width="29.7cm">
   <defs/>
-  <rect fill="grey" height="42cm" stroke="black" stroke-width="3" width="29.7cm" x="0" y="0"/>
-  <rect fill="blue" height="35cm" rx="0.8cm" stroke="red" stroke-width="3" width="7.0cm" x="0.5cm" y="0.5cm"/>
-  <rect fill="red" height="2cm" width="0.5cm" x="3.75cm" y="2.5cm"/>
-  <rect fill="red" height="2cm" width="0.5cm" x="3.75cm" y="2.5cm"/>
-  <rect fill="blue" height="35cm" rx="0.8cm" stroke="red" stroke-width="3" width="7.0cm" x="7.5cm" y="0.5cm"/>
-  <rect fill="red" height="2cm" width="0.5cm" x="10.75cm" y="2.5cm"/>
-  <rect fill="red" height="2cm" width="0.5cm" x="10.75cm" y="2.5cm"/>
+  <rect fill="grey" height="42" width="29.7" x="0" y="0"/>
+  <rect fill="blue" height="35" rx="0.8" stroke="red" stroke-width="0.001" width="7.0" x="0.5" y="0.5"/>
+  <rect fill="grey" height="2" stroke="red" stroke-width="0.001" transform="rotate(138.81407483429035,4.0,3.5)" width="0.5" x="3.75" y="2.5"/>
+  <rect fill="grey" height="2" stroke="red" stroke-width="0.001" transform="rotate(41.18592516570965,4.0,32.5)" width="0.5" x="3.75" y="31.5"/>
+  <rect fill="blue" height="35" rx="0.8" stroke="red" stroke-width="0.001" width="7.0" x="7.5" y="0.5"/>
+  <rect fill="grey" height="2" stroke="red" stroke-width="0.001" transform="rotate(41.18592516570965,11.0,3.5)" width="0.5" x="10.75" y="2.5"/>
+  <rect fill="grey" height="2" stroke="red" stroke-width="0.001" transform="rotate(138.81407483429035,11.0,32.5)" width="0.5" x="10.75" y="31.5"/>
 </svg>
