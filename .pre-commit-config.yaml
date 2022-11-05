@@ -13,8 +13,6 @@ repos:
     rev: v2.37.0
     hooks:
       - id: commitizen
-      - id: commitizen-branch
-        stages: [push]
 -   repo: local
     hooks:
       - id: update-svg
