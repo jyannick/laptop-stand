@@ -1,6 +1,7 @@
 from math import degrees
-from main import supports_small_half_angle, supports_big_half_angle
 import pytest
+
+from measurements import supports_small_half_angle, supports_big_half_angle
 
 ATAN_40_35 = 41.185925
 
